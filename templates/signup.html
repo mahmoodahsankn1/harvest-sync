@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Signup | Harvest Sync</title>
+
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+
+    <!-- CSS Modules -->
+    <link rel="stylesheet" href="{% static 'css/global.css' %}">
+    <link rel="stylesheet" href="{% static 'css/signup.module.css' %}">
+</head>
+
+<body data-role="consumer">
+
+    <div class="settings-panel">
+        <button id="lang-toggle" class="lang-toggle">English / മലയാളം</button>
+    </div>
+
+    <div class="signup-container">
+        <!-- Visual Blobs -->
+        <div class="blob blob-1" style="position: fixed; top: -10%; left: -10%;"></div>
+        <div class="blob blob-2" style="position: fixed; bottom: -10%; right: -10%;"></div>
+
+        <div class="glass-card signup-card">
+            <h1 class="signup-title" data-i18n="signup_title">Join Harvest Sync</h1>
+
+            <p style="margin-bottom: 15px; font-weight: 600;" data-i18n="role_select">Select Your Role</p>
+            <div class="role-selector">
+                <button class="role-btn" data-role="farmer" data-i18n="farmer">Farmer</button>
+                <button class="role-btn active" data-role="consumer" data-i18n="consumer">Consumer</button>
+                <button class="role-btn" data-role="worker" data-i18n="worker">Worker</button>
+            </div>
+
+            <form id="signup-form">
+                <!-- Common Fields -->
+                <div class="form-group">
+                    <label for="name" data-i18n="name">Full Name</label>
+                    <input type="text" id="name" name="name" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="phone" data-i18n="phone">Phone Number</label>
+                    <input type="tel" id="phone" name="phone" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="email" data-i18n="email">Email Address</label>
+                    <input type="email" id="email" name="email" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="place" data-i18n="place">Place</label>
+                    <input type="text" id="place" name="place" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="password" data-i18n="password">Password</label>
+                    <input type="password" id="password" name="password" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="confirm_password" data-i18n="confirm_password">Confirm Password</label>
+                    <input type="password" id="confirm_password" name="confirm_password" required>
+                </div>
+
+                <!-- Farmer Specific Fields -->
+                <div id="farmer-fields" class="hidden">
+                    <div class="form-group">
+                        <label data-i18n="location">Location (Google Map)</label>
+                        <div class="map-placeholder" id="location-container">
+                            <span class="map-icon">📍</span>
+                            <span id="location-status" data-i18n="use_current_loc">Use Current Location</span>
+                        </div>
+                        <input type="hidden" id="latitude" name="latitude">
+                        <input type="hidden" id="longitude" name="longitude">
+                    </div>
+                    <div class="form-group">
+                        <label for="land_area" data-i18n="land_area">Land Area (in acres)</label>
+                        <input type="number" id="land_area" name="land_area" step="0.1">
+                    </div>
+                </div>
+
+                <!-- Worker Specific Fields -->
+                <div id="worker-fields" class="hidden">
+                    <div class="form-group">
+                        <label data-i18n="skills">Worker Skills</label>
+                        <div class="skills-grid">
+                            <label class="skill-item">
+                                <input type="checkbox" name="skills" value="plowing"> <span
+                                    data-i18n="plowing">Plowing</span>
+                            </label>
+                            <label class="skill-item">
+                                <input type="checkbox" name="skills" value="harvesting"> <span
+                                    data-i18n="harvesting">Harvesting</span>
+                            </label>
+                            <label class="skill-item">
+                                <input type="checkbox" name="skills" value="irrigation"> <span
+                                    data-i18n="irrigation">Irrigation</span>
+                            </label>
+                            <label class="skill-item">
+                                <input type="checkbox" name="skills" value="transport"> <span
+                                    data-i18n="transport">Transport</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="signup-btn-container">
+                    <button type="submit" class="btn btn-user" id="submit-btn" data-i18n="signup_btn">Create
+                        Account</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ES6 Module Script -->
+    <script type="module" src="{% static 'js/signup.js' %}"></script>
+</body>
+
+</html>

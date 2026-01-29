@@ -4,6 +4,10 @@ def index(request):
     """Landing page to choose role"""
     return render(request, 'index.html')
 
+def signup(request):
+    """Unified signup page for all roles"""
+    return render(request, 'signup.html')
+
 def farmer_dashboard(request):
     """Farmer module dashboard"""
     return render(request, 'farmer_dashboard.html')

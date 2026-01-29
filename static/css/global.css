@@ -2,35 +2,36 @@
 
 :root {
     /* STRICT COLOR THEME ENFORCEMENT */
+    --bg-glass: rgba(255, 255, 255, 0.15);
+    --border-glass: rgba(255, 255, 255, 0.2);
     --brand-farmer: #F59E0B;
     --brand-user: #0EA5E9;
     --brand-worker: #475569;
     --brand-govt: #6366F1;
     --brand-alert: #EF4444;
 
-    /* Glassmorphism Variables */
-    --bg-glass: rgba(255, 255, 255, 0.15);
-    --border-glass: rgba(255, 255, 255, 0.2);
-    --shadow-glass: 0 10px 25px rgba(0, 0, 0, 0.1);
-    
-    /* UI Metrics */
-    --radius-lg: 24px;
-    --radius-xl: 32px;
+    /* Text Colors */
+    --text-primary: #1F2937;
+    --text-secondary: #4B5563;
+    --text-light: #F9FAFB;
+
+    /* Spacing & Layout */
+    --border-radius-lg: 24px;
+    --shadow-soft: 0 10px 25px rgba(0, 0, 0, 0.1);
 }
 
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
 }
 
 body {
-    font-family: 'Inter', system-ui, -apple-system, sans-serif;
-    min-height: 100vh;
-    /* Default background, can be overridden by specific modules or via role logic */
     background: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%);
-    color: #1f2937;
-    line-height: 1.5;
+    min-height: 100vh;
+    color: var(--text-primary);
+    overflow-x: hidden;
 }
 
 /* Glassmorphism Utilities */
@@ -39,69 +40,41 @@ body {
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
     border: 1px solid var(--border-glass);
-    border-radius: var(--radius-lg);
-    box-shadow: var(--shadow-glass);
+    border-radius: var(--border-radius-lg);
+    box-shadow: var(--shadow-soft);
 }
 
-.glass-btn {
-    background: var(--bg-glass);
-    backdrop-filter: blur(4px);
-    border: 1px solid var(--border-glass);
-    border-radius: var(--radius-lg);
+.btn {
+    border: none;
     padding: 12px 24px;
+    border-radius: var(--border-radius-lg);
+    font-weight: 600;
     cursor: pointer;
     transition: all 0.3s ease;
-    font-weight: 600;
-}
-
-.glass-btn:hover {
-    background: rgba(255, 255, 255, 0.25);
-    transform: translateY(-2px);
-}
-
-/* Layout Utilities */
-.container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 0 20px;
-}
-
-.grid {
-    display: grid;
-    gap: 20px;
-}
-
-.flex {
-    display: flex;
-    gap: 20px;
-}
-
-.flex-center {
-    display: flex;
-    justify-content: center;
+    text-decoration: none;
+    display: inline-flex;
     align-items: center;
+    gap: 8px;
+    font-size: 1rem;
 }
 
-/* Role Specific Accents (will be scoped by body[data-role="..."]) */
-body[data-role="farmer"] {
-    --primary-color: var(--brand-farmer);
+.btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
 }
 
-body[data-role="user"] {
-    --primary-color: var(--brand-user);
+/* Button Variants */
+.btn-farmer { background: var(--brand-farmer); color: white; }
+.btn-user { background: var(--brand-user); color: white; }
+.btn-worker { background: var(--brand-worker); color: white; }
+.btn-govt { background: var(--brand-govt); color: white; }
+
+/* Typography */
+h1, h2, h3 {
+    font-weight: 800;
+    line-height: 1.2;
 }
 
-body[data-role="worker"] {
-    --primary-color: var(--brand-worker);
-}
-
-body[data-role="govt"] {
-    --primary-color: var(--brand-govt);
-}
-
-/* Button variants based on role */
-.btn-primary {
-    background-color: var(--primary-color, #3b82f6); /* Fallback */
-    color: white;
-    border: none;
+.hidden {
+    display: none !important;
 }
