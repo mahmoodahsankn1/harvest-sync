@@ -16,6 +16,8 @@ urlpatterns = [
     path('products/<int:product_id>/bid/', views.place_bid, name='place_bid'),
     path('products/<int:product_id>/buy/', views.buy_product, name='buy_product'),
     path('orders/', views.my_orders, name='my_orders'),
+    path('orders/consumer/', views.consumer_orders, name='consumer_orders'),
+    path('orders/bids/', views.consumer_bids, name='consumer_bids'),
     path('orders/route/', views.optimize_route, name='optimize_route'),
     
     # Product Management

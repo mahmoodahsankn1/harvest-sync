@@ -92,3 +92,78 @@ Harvest Sync Team
     except Exception as e:
         print(f"Error sending invoice emails: {e}")
         return False
+
+def send_new_bid_email(bid):
+    """Send email to farmer when a new bid is placed"""
+    try:
+        product = bid.product
+        farmer = product.farmer
+        bidder = bid.user
+        
+        subject = f'New Bid on {product.name} - Harvest Sync'
+        message = f"""
+Dear {farmer.first_name},
+
+You have received a new bid on your product!
+
+Product: {product.name}
+Bid Amount: ₹{bid.amount}
+Bidder: {bidder.first_name}
+
+Current Status:
+- Base Price: ₹{product.base_bid_price or product.price}
+- Bidding Ends: {product.bidding_end_time.strftime('%B %d, %Y at %I:%M %p') if product.bidding_end_time else 'Soon'}
+
+Check your dashboard for more details.
+
+Best regards,
+Harvest Sync Team
+        """
+        
+        send_mail(
+            subject,
+            message,
+            settings.EMAIL_HOST_USER,
+            [farmer.email],
+            fail_silently=False,
+        )
+        return True
+    except Exception as e:
+        print(f"Error sending new bid email: {e}")
+        return False
+
+def send_bid_won_email(bid):
+    """Send email to consumer when they win a bid"""
+    try:
+        product = bid.product
+        winner = bid.user
+        farmer = product.farmer
+        
+        subject = f'🎉 You Won the Bid for {product.name}! - Harvest Sync'
+        message = f"""
+Dear {winner.first_name},
+
+Congratulations! You have won the auction!
+
+Product: {product.name}
+Winning Bid: ₹{bid.amount}
+Seller: {farmer.first_name}
+Location: {farmer.profile.place}
+
+Please login to your account to complete the purchase.
+
+Best regards,
+Harvest Sync Team
+        """
+        
+        send_mail(
+            subject,
+            message,
+            settings.EMAIL_HOST_USER,
+            [winner.email],
+            fail_silently=False,
+        )
+        return True
+    except Exception as e:
+        print(f"Error sending bid won email: {e}")
+        return False

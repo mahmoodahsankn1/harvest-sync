@@ -1,0 +1,316 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}My Bids | Harvest Sync{% endblock %}
+{% block role %}consumer{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/modules/consumer.css' %}">
+<style>
+    /* CSS Module: consumer_bids - Part of Harvest Sync */
+    .consumer-main {
+        padding: 2rem;
+        min-height: 100vh;
+        background: linear-gradient(135deg, #0c1929 0%, #1a365d 100%);
+    }
+
+    .bids-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+    }
+
+    .bids-header h1 {
+        color: white;
+        font-size: 2rem;
+        margin: 0;
+    }
+
+    .section-title {
+        color: white;
+        font-size: 1.25rem;
+        margin: 2rem 0 1rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .bids-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+        gap: 1.5rem;
+    }
+
+    .bid-card {
+        background: rgba(255, 255, 255, 0.25);
+        backdrop-filter: blur(12px);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        border-radius: 24px;
+        padding: 1.5rem;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        color: white;
+    }
+
+    .bid-card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 1rem;
+    }
+
+    .bid-product-name {
+        font-size: 1.1rem;
+        font-weight: 600;
+        margin: 0;
+    }
+
+    .bid-status {
+        padding: 0.25rem 0.75rem;
+        border-radius: 99px;
+        font-size: 0.8rem;
+        font-weight: 500;
+    }
+
+    .status-leading {
+        background: rgba(16, 185, 129, 0.2);
+        color: #10B981;
+    }
+
+    .status-outbid {
+        background: rgba(239, 68, 68, 0.2);
+        color: #EF4444;
+    }
+
+    .status-won {
+        background: rgba(14, 165, 233, 0.2);
+        color: #0EA5E9;
+    }
+
+    .status-lost {
+        background: rgba(107, 114, 128, 0.2);
+        color: #9CA3AF;
+    }
+
+    .bid-info {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 0.75rem;
+        margin-bottom: 1rem;
+        font-size: 0.9rem;
+    }
+
+    .bid-info-item {
+        background: rgba(255, 255, 255, 0.1);
+        padding: 0.75rem;
+        border-radius: 12px;
+    }
+
+    .bid-info-label {
+        display: block;
+        opacity: 0.7;
+        font-size: 0.8rem;
+        margin-bottom: 0.25rem;
+    }
+
+    .bid-info-value {
+        font-weight: 600;
+    }
+
+    .time-remaining {
+        background: rgba(245, 158, 11, 0.15);
+        border: 1px solid rgba(245, 158, 11, 0.3);
+        padding: 0.75rem;
+        border-radius: 12px;
+        text-align: center;
+        font-size: 0.9rem;
+    }
+
+    .btn-view {
+        display: block;
+        width: 100%;
+        text-align: center;
+        background: rgba(14, 165, 233, 0.2);
+        color: #0EA5E9;
+        padding: 0.75rem;
+        border-radius: 12px;
+        text-decoration: none;
+        margin-top: 1rem;
+        border: 1px solid rgba(14, 165, 233, 0.3);
+        transition: background 0.2s ease;
+    }
+
+    .btn-view:hover {
+        background: rgba(14, 165, 233, 0.3);
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 3rem;
+        color: rgba(255, 255, 255, 0.7);
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 24px;
+    }
+
+    .empty-state span {
+        font-size: 3rem;
+        display: block;
+        margin-bottom: 1rem;
+    }
+
+    .btn-back {
+        background: rgba(255, 255, 255, 0.2);
+        color: white;
+        padding: 0.75rem 1.5rem;
+        border-radius: 24px;
+        text-decoration: none;
+        border: 1px solid rgba(255, 255, 255, 0.3);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Consumer Navigation Bar -->
+{% include 'partials/consumer_nav.html' %}
+
+<main class="consumer-main">
+    <div class="bids-header">
+        <h1 data-i18n="my_bids_title">🔨 My Bids</h1>
+        <a href="{% url 'marketplace' %}" class="btn-back" data-i18n="back_to_marketplace">← Back to Marketplace</a>
+    </div>
+
+    <!-- Active Bids Section -->
+    <h2 class="section-title">🔥 Active Bids</h2>
+    {% if active_bids %}
+    <div class="bids-grid">
+        {% for item in active_bids %}
+        <div class="bid-card">
+            <div class="bid-card-header">
+                <h3 class="bid-product-name">{{ item.product.name }}</h3>
+                {% if item.is_highest %}
+                <span class="bid-status status-leading">Leading</span>
+                {% else %}
+                <span class="bid-status status-outbid">Outbid</span>
+                {% endif %}
+            </div>
+            <div class="bid-info">
+                <div class="bid-info-item">
+                    <span class="bid-info-label">Your Bid</span>
+                    <span class="bid-info-value">₹{{ item.bid.amount }}</span>
+                </div>
+                <div class="bid-info-item">
+                    <span class="bid-info-label">Highest Bid</span>
+                    <span class="bid-info-value">₹{{ item.highest_amount }}</span>
+                </div>
+            </div>
+            {% if item.product.bidding_end_time %}
+            <div class="time-remaining" data-end-time="{{ item.product.bidding_end_time|date:'c' }}">
+                <div style="font-size: 0.75rem; opacity: 0.8; margin-bottom: 0.25rem;">⏰ Time Remaining</div>
+                <div class="countdown" style="font-size: 1.1rem; font-weight: 600;"></div>
+                <div style="font-size: 0.75rem; opacity: 0.6; margin-top: 0.25rem;">Ends: {{
+                    item.product.bidding_end_time|date:"M d, Y H:i" }}</div>
+            </div>
+            {% endif %}
+            <a href="{% url 'product_detail' item.product.id %}" class="btn-view">View Auction</a>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="empty-state">
+        <span>📭</span>
+        <p data-i18n="no_active_bids">You have no active bids.</p>
+    </div>
+    {% endif %}
+
+    <!-- Won Bids Section -->
+    <h2 class="section-title">🏆 Won Bids</h2>
+    {% if won_bids %}
+    <div class="bids-grid">
+        {% for item in won_bids %}
+        <div class="bid-card">
+            <div class="bid-card-header">
+                <h3 class="bid-product-name">{{ item.product.name }}</h3>
+                <span class="bid-status status-won">Won!</span>
+            </div>
+            <div class="bid-info">
+                <div class="bid-info-item">
+                    <span class="bid-info-label">Winning Bid</span>
+                    <span class="bid-info-value">₹{{ item.bid.amount }}</span>
+                </div>
+                <div class="bid-info-item">
+                    <span class="bid-info-label">Seller</span>
+                    <span class="bid-info-value">{{ item.product.farmer.first_name }}</span>
+                </div>
+            </div>
+            <a href="{% url 'product_detail' item.product.id %}" class="btn-view">Complete Purchase</a>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="empty-state">
+        <span>🎯</span>
+        <p data-i18n="no_won_bids">You haven't won any bids yet.</p>
+    </div>
+    {% endif %}
+
+    <!-- Lost Bids Section -->
+    {% if lost_bids %}
+    <h2 class="section-title" style="opacity: 0.6;">📦 Past Bids (Lost)</h2>
+    <div class="bids-grid">
+        {% for item in lost_bids %}
+        <div class="bid-card" style="opacity: 0.7;">
+            <div class="bid-card-header">
+                <h3 class="bid-product-name">{{ item.product.name }}</h3>
+                <span class="bid-status status-lost">Lost</span>
+            </div>
+            <div class="bid-info">
+                <div class="bid-info-item">
+                    <span class="bid-info-label">Your Bid</span>
+                    <span class="bid-info-value">₹{{ item.bid.amount }}</span>
+                </div>
+                <div class="bid-info-item">
+                    <span class="bid-info-label">Winning Bid</span>
+                    <span class="bid-info-value">₹{{ item.highest_amount }}</span>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+</main>
+
+<script>
+    /* JS Module: consumer_bids - Handles countdown timer */
+    function updateCountdowns() {
+        document.querySelectorAll('.time-remaining[data-end-time]').forEach(function (el) {
+            const endTime = new Date(el.dataset.endTime);
+            const now = new Date();
+            const diff = endTime - now;
+
+            const countdownEl = el.querySelector('.countdown');
+            if (!countdownEl) return;
+
+            if (diff <= 0) {
+                countdownEl.innerHTML = '<span style="color: #EF4444;">Auction Ended</span>';
+                return;
+            }
+
+            const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+
+            let text = '';
+            if (days > 0) text += days + 'd ';
+            if (hours > 0 || days > 0) text += hours + 'h ';
+            text += minutes + 'm ' + seconds + 's';
+
+            countdownEl.textContent = text;
+        });
+    }
+
+    // Update every second
+    updateCountdowns();
+    setInterval(updateCountdowns, 1000);
+</script>
+{% endblock %}

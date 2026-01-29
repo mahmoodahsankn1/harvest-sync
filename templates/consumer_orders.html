@@ -1,0 +1,180 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}My Orders | Harvest Sync{% endblock %}
+{% block role %}consumer{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/modules/consumer.css' %}">
+<style>
+    /* CSS Module: consumer_orders - Part of Harvest Sync */
+    .consumer-main {
+        padding: 2rem;
+        min-height: 100vh;
+        background: linear-gradient(135deg, #0c1929 0%, #1a365d 100%);
+    }
+
+    .orders-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+    }
+
+    .orders-header h1 {
+        color: white;
+        font-size: 2rem;
+        margin: 0;
+    }
+
+    .orders-table-container {
+        background: rgba(255, 255, 255, 0.25);
+        backdrop-filter: blur(12px);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        border-radius: 24px;
+        overflow: hidden;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    }
+
+    .orders-table {
+        width: 100%;
+        border-collapse: collapse;
+        color: white;
+    }
+
+    .orders-table thead tr {
+        background: rgba(14, 165, 233, 0.2);
+    }
+
+    .orders-table th,
+    .orders-table td {
+        padding: 1rem 1.25rem;
+        text-align: left;
+    }
+
+    .orders-table tbody tr {
+        border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+        transition: background 0.2s ease;
+    }
+
+    .orders-table tbody tr:hover {
+        background: rgba(255, 255, 255, 0.1);
+    }
+
+    .orders-table tbody tr:last-child {
+        border-bottom: none;
+    }
+
+    .status-badge {
+        display: inline-block;
+        padding: 0.25rem 0.75rem;
+        border-radius: 99px;
+        font-size: 0.85rem;
+        font-weight: 500;
+    }
+
+    .status-pending {
+        background: rgba(251, 191, 36, 0.2);
+        color: #FCD34D;
+    }
+
+    .status-confirmed {
+        background: rgba(16, 185, 129, 0.2);
+        color: #10B981;
+    }
+
+    .status-shipped {
+        background: rgba(14, 165, 233, 0.2);
+        color: #0EA5E9;
+    }
+
+    .status-delivered {
+        background: rgba(34, 197, 94, 0.2);
+        color: #22C55E;
+    }
+
+    .status-cancelled {
+        background: rgba(239, 68, 68, 0.2);
+        color: #EF4444;
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 3rem;
+        color: rgba(255, 255, 255, 0.7);
+    }
+
+    .empty-state span {
+        font-size: 3rem;
+        display: block;
+        margin-bottom: 1rem;
+    }
+
+    .btn-back {
+        background: rgba(255, 255, 255, 0.2);
+        color: white;
+        padding: 0.75rem 1.5rem;
+        border-radius: 24px;
+        text-decoration: none;
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        transition: background 0.2s ease;
+    }
+
+    .btn-back:hover {
+        background: rgba(255, 255, 255, 0.3);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Consumer Navigation Bar -->
+{% include 'partials/consumer_nav.html' %}
+
+<main class="consumer-main">
+    <div class="orders-header">
+        <h1 data-i18n="my_orders_title">📦 My Orders</h1>
+        <a href="{% url 'marketplace' %}" class="btn-back" data-i18n="back_to_marketplace">← Back to Marketplace</a>
+    </div>
+
+    <div class="orders-table-container">
+        <table class="orders-table">
+            <thead>
+                <tr>
+                    <th data-i18n="order_id">Order ID</th>
+                    <th data-i18n="product_name">Product</th>
+                    <th data-i18n="quantity">Quantity</th>
+                    <th data-i18n="total_price">Amount</th>
+                    <th data-i18n="status">Status</th>
+                    <th data-i18n="date">Date</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for order in orders %}
+                <tr>
+                    <td>#{{ order.id }}</td>
+                    <td>{{ order.product.name }}</td>
+                    <td>{{ order.quantity }}</td>
+                    <td>₹{{ order.total_price }}</td>
+                    <td>
+                        <span class="status-badge status-{{ order.status }}">
+                            {{ order.status|title }}
+                        </span>
+                    </td>
+                    <td>{{ order.created_at|date:"M d, Y" }}</td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="6" class="empty-state">
+                        <span>🛒</span>
+                        <p data-i18n="no_orders_yet">You haven't placed any orders yet.</p>
+                        <a href="{% url 'marketplace' %}" class="btn-back"
+                            style="display: inline-block; margin-top: 1rem;" data-i18n="start_shopping">Start
+                            Shopping</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</main>
+{% endblock %}

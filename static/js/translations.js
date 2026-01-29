@@ -74,12 +74,25 @@ export const translations = {
         nav_my_products: "My Products",
         nav_analytics: "Analytics",
         nav_marketplace: "Marketplace",
+        nav_cart: "Cart",
         nav_orders: "My Orders",
         nav_wishlist: "Wishlist",
         profile: "My Profile",
         settings: "Settings",
         telegram: "Telegram",
         logout: "Logout",
+
+        // Cart
+        add_to_cart: "Add to Cart",
+        my_cart: "My Cart",
+        cart_empty: "Your cart is empty",
+        start_shopping: "Start Shopping",
+        continue_shopping: "Continue Shopping",
+        checkout: "Checkout",
+        total: "Total",
+        product: "Product",
+        quantity: "Quantity",
+        price: "Price",
 
         // Weather Widget
         weather_title: 'Weather Dashboard',
@@ -198,12 +211,25 @@ export const translations = {
         nav_my_products: "എന്റെ ഉൽപ്പന്നങ്ങൾ",
         nav_analytics: "അനലിറ്റിക്സ്",
         nav_marketplace: "മാർക്കറ്റ്പ്ലേസ്",
+        nav_cart: "കാർട്ട്",
         nav_orders: "എന്റെ ഓർഡറുകൾ",
         nav_wishlist: "വിഷ്‌ലിസ്റ്റ്",
         profile: "എന്റെ പ്രൊഫൈൽ",
         settings: "ക്രമീകരണങ്ങൾ",
         telegram: "ടെലിഗ്രാം",
         logout: "ലോഗൗട്ട്",
+
+        // Cart
+        add_to_cart: "കാർട്ടിലേക്ക് ചേർക്കുക",
+        my_cart: "എന്റെ കാർട്ട്",
+        cart_empty: "നിങ്ങളുടെ കാർട്ട് ഒഴിഞ്ഞിരിക്കുന്നു",
+        start_shopping: "ഷോപ്പിംഗ് ആരംഭിക്കുക",
+        continue_shopping: "ഷോപ്പിംഗ് തുടരുക",
+        checkout: "ചെക്ക് ഔട്ട്",
+        total: "ആകെ",
+        product: "ഉൽപ്പന്നം",
+        quantity: "അളവ്",
+        price: "വില",
 
         // Weather Widget
         weather_title: 'കാലാവസ്ഥ ഡാഷ്ബോർഡ്',

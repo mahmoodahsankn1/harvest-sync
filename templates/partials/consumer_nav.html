@@ -27,14 +27,17 @@
             <span class="nav-link-icon">🛍️</span>
             <span data-i18n="nav_cart">Cart</span>
         </a>
-        <a href="#" class="nav-link">
+        <a href="{% url 'consumer_orders' %}"
+            class="nav-link {% if request.resolver_match.url_name == 'consumer_orders' %}active{% endif %}">
             <span class="nav-link-icon">📦</span>
             <span data-i18n="nav_orders">My Orders</span>
         </a>
-        <a href="#" class="nav-link">
-            <span class="nav-link-icon">❤️</span>
-            <span data-i18n="nav_wishlist">Wishlist</span>
+        <a href="{% url 'consumer_bids' %}"
+            class="nav-link {% if request.resolver_match.url_name == 'consumer_bids' %}active{% endif %}">
+            <span class="nav-link-icon">🔨</span>
+            <span data-i18n="nav_bids">My Bids</span>
         </a>
+
     </div>
 
     <!-- Right Actions -->

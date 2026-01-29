@@ -266,6 +266,7 @@ def product_detail(request, product_id):
         return redirect('marketplace')
 
 @login_required
+# Trigger reload
 def place_bid(request, product_id):
     """Place a bid on a product"""
     if request.method == 'POST':
@@ -291,11 +292,15 @@ def place_bid(request, product_id):
                 messages.error(request, f"Bid must be higher than ₹{min_bid}")
                 return redirect('product_detail', product_id=product_id)
             
-            Bid.objects.create(
+            bid = Bid.objects.create(
                 product=product,
                 user=request.user,
                 amount=amount
             )
+            
+            # Send email notification to farmer
+            from .utils import send_new_bid_email
+            send_new_bid_email(bid)
             
             messages.success(request, "Bid placed successfully!")
             return redirect('product_detail', product_id=product_id)
@@ -354,6 +359,59 @@ def my_orders(request):
     orders = Order.objects.filter(product__in=products).order_by('-created_at')
     
     return render(request, 'my_orders.html', {'orders': orders})
+
+@login_required
+def consumer_orders(request):
+    """Consumer: View order history"""
+    if request.user.profile.role != 'consumer':
+        return redirect('index')
+        
+    # Get orders placed by this consumer
+    orders = Order.objects.filter(buyer=request.user).order_by('-created_at')
+    
+    return render(request, 'consumer_orders.html', {'orders': orders})
+
+@login_required
+def consumer_bids(request):
+    """Consumer: View active and won bids"""
+    if request.user.profile.role != 'consumer':
+        return redirect('index')
+        
+    # Get all bids by this consumer
+    user_bids = Bid.objects.filter(user=request.user).select_related('product').order_by('-timestamp')
+    
+    active_bids = []
+    won_bids = []
+    lost_bids = []
+    
+    for bid in user_bids:
+        product = bid.product
+        highest_bid = product.bids.order_by('-amount').first()
+        is_highest = highest_bid and highest_bid.id == bid.id
+        
+        bid_info = {
+            'bid': bid,
+            'product': product,
+            'is_highest': is_highest,
+            'highest_amount': highest_bid.amount if highest_bid else bid.amount,
+        }
+        
+        # Check if bidding has ended
+        if product.bidding_end_time and timezone.now() > product.bidding_end_time:
+            if is_highest:
+                won_bids.append(bid_info)
+            else:
+                lost_bids.append(bid_info)
+        else:
+            active_bids.append(bid_info)
+    
+    context = {
+        'active_bids': active_bids,
+        'won_bids': won_bids,
+        'lost_bids': lost_bids,
+    }
+    
+    return render(request, 'consumer_bids.html', context)
 
 @login_required
 def optimize_route(request):
@@ -840,8 +898,9 @@ def checkout_cart(request):
         buyer_profile = request.user.profile
         
         # Create orders for each item
+        orders_created = []
         for item in cart.items.all():
-            Order.objects.create(
+            order = Order.objects.create(
                 product=item.product,
                 buyer=request.user,
                 quantity=f"{item.quantity} x {item.product.quantity}",
@@ -852,11 +911,19 @@ def checkout_cart(request):
                 latitude=buyer_profile.latitude,
                 longitude=buyer_profile.longitude
             )
+            orders_created.append(order)
             
-        # Clear cart
+        # Clear cart first to ensure it's done
         cart.items.all().delete()
         
-        messages.success(request, "Checkout successful! Orders placed.")
+        # Send invoice emails (non-blocking - errors won't prevent checkout)
+        for order in orders_created:
+            try:
+                send_invoice_emails(order)
+            except Exception as e:
+                print(f"Error sending invoice email for order {order.id}: {e}")
+        
+        messages.success(request, "Payment Successful! Invoices have been sent to your email.")
         return redirect('marketplace')
             
     return redirect('view_cart')
