@@ -1,0 +1,107 @@
+/* CSS Module: Global - Part of Harvest Sync */
+
+:root {
+    /* STRICT COLOR THEME ENFORCEMENT */
+    --brand-farmer: #F59E0B;
+    --brand-user: #0EA5E9;
+    --brand-worker: #475569;
+    --brand-govt: #6366F1;
+    --brand-alert: #EF4444;
+
+    /* Glassmorphism Variables */
+    --bg-glass: rgba(255, 255, 255, 0.15);
+    --border-glass: rgba(255, 255, 255, 0.2);
+    --shadow-glass: 0 10px 25px rgba(0, 0, 0, 0.1);
+    
+    /* UI Metrics */
+    --radius-lg: 24px;
+    --radius-xl: 32px;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    min-height: 100vh;
+    /* Default background, can be overridden by specific modules or via role logic */
+    background: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%);
+    color: #1f2937;
+    line-height: 1.5;
+}
+
+/* Glassmorphism Utilities */
+.glass-card {
+    background: var(--bg-glass);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid var(--border-glass);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-glass);
+}
+
+.glass-btn {
+    background: var(--bg-glass);
+    backdrop-filter: blur(4px);
+    border: 1px solid var(--border-glass);
+    border-radius: var(--radius-lg);
+    padding: 12px 24px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-weight: 600;
+}
+
+.glass-btn:hover {
+    background: rgba(255, 255, 255, 0.25);
+    transform: translateY(-2px);
+}
+
+/* Layout Utilities */
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+.grid {
+    display: grid;
+    gap: 20px;
+}
+
+.flex {
+    display: flex;
+    gap: 20px;
+}
+
+.flex-center {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Role Specific Accents (will be scoped by body[data-role="..."]) */
+body[data-role="farmer"] {
+    --primary-color: var(--brand-farmer);
+}
+
+body[data-role="user"] {
+    --primary-color: var(--brand-user);
+}
+
+body[data-role="worker"] {
+    --primary-color: var(--brand-worker);
+}
+
+body[data-role="govt"] {
+    --primary-color: var(--brand-govt);
+}
+
+/* Button variants based on role */
+.btn-primary {
+    background-color: var(--primary-color, #3b82f6); /* Fallback */
+    color: white;
+    border: none;
+}

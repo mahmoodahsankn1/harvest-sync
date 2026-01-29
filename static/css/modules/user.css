@@ -1,0 +1,36 @@
+/* CSS Module: User (Consumer) - Part of Harvest Sync */
+
+.marketplace-header {
+    background: linear-gradient(to right, var(--brand-user), #3b82f6);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    font-weight: 800;
+}
+
+.product-card {
+    transition: transform 0.3s ease;
+}
+
+.product-card:hover {
+    transform: translateY(-5px);
+}
+
+.price-tag {
+    background-color: var(--brand-user);
+    color: white;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+.surplus-badge {
+    background-color: var(--brand-alert);
+    color: white;
+    font-size: 0.75rem;
+    padding: 2px 8px;
+    border-radius: 4px;
+    text-transform: uppercase;
+    font-weight: bold;
+}

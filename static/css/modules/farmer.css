@@ -1,0 +1,36 @@
+/* CSS Module: Farmer - Part of Harvest Sync */
+
+.farmer-dashboard {
+    padding: 40px 0;
+}
+
+.stat-card {
+    border-left: 4px solid var(--brand-farmer);
+}
+
+.btn-farmer {
+    background-color: var(--brand-farmer);
+    color: white;
+    border: none;
+}
+
+.btn-farmer:hover {
+    background-color: #d97706;
+    /* Darker amber */
+}
+
+.crop-upload-zone {
+    border: 2px dashed var(--brand-farmer);
+    padding: 40px;
+    text-align: center;
+    border-radius: var(--radius-lg);
+    background: rgba(245, 158, 11, 0.05);
+    /* low opacity farmer brand */
+    color: var(--brand-farmer);
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.crop-upload-zone:hover {
+    background: rgba(245, 158, 11, 0.1);
+}
