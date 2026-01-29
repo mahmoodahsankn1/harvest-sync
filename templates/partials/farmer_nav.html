@@ -1,0 +1,116 @@
+<!-- Farmer Navigation Component - Part of Harvest Sync -->
+{% load static %}
+
+<nav class="farmer-nav">
+    <!-- Brand -->
+    <a href="{% url 'farmer_dashboard' %}" class="nav-brand">
+        <img src="{% static 'logo.jpeg' %}" alt="Harvest Sync" class="nav-logo">
+        <span class="nav-title">Harvest Sync</span>
+    </a>
+
+    <!-- Mobile Menu Button -->
+    <button class="mobile-menu-btn" aria-label="Toggle Menu">
+        <span></span>
+        <span></span>
+        <span></span>
+    </button>
+
+    <!-- Navigation Links -->
+    <div class="nav-links">
+        <a href="{% url 'farmer_dashboard' %}"
+            class="nav-link {% if request.resolver_match.url_name == 'farmer_dashboard' %}active{% endif %}">
+            <span class="nav-link-icon">🏠</span>
+            <span data-i18n="nav_dashboard">Dashboard</span>
+        </a>
+        <a href="{% url 'farmer_marketplace' %}"
+            class="nav-link {% if request.resolver_match.url_name == 'farmer_marketplace' or request.resolver_match.url_name == 'add_product' or request.resolver_match.url_name == 'my_products' or request.resolver_match.url_name == 'my_orders' %}active{% endif %}">
+            <span class="nav-link-icon">🏪</span>
+            <span data-i18n="nav_marketplace">Marketplace</span>
+        </a>
+        <a href="{% url 'analytics' %}"
+            class="nav-link {% if request.resolver_match.url_name == 'analytics' %}active{% endif %}">
+            <span class="nav-link-icon">📊</span>
+            <span data-i18n="nav_analytics">Analytics</span>
+        </a>
+    </div>
+
+    <!-- Right Actions -->
+    <div class="nav-actions">
+        <!-- Language Toggle -->
+        <div class="lang-toggle">
+            <button
+                class="lang-btn {% if request.user.profile.language_preference == 'en' or not request.user.profile.language_preference %}active{% endif %}"
+                data-lang="en">EN</button>
+            <button class="lang-btn {% if request.user.profile.language_preference == 'ml' %}active{% endif %}"
+                data-lang="ml">മല</button>
+        </div>
+
+        <!-- Notifications -->
+        <div class="nav-notification" id="notificationBell" title="Notifications">
+            🔔
+            <span class="notification-badge" id="notifBadge" style="display: none;">0</span>
+        </div>
+
+        <!-- Profile Dropdown -->
+        <div class="nav-profile" id="profileDropdown">
+            <div class="profile-trigger" onclick="toggleProfileDropdown()">
+                <div class="profile-avatar">
+                    {{ request.user.first_name|slice:":1"|default:"F" }}
+                </div>
+                <div class="profile-info">
+                    <span class="profile-name">{{ request.user.first_name|default:"Farmer" }}</span>
+                    <span class="profile-role">Farmer</span>
+                </div>
+                <span class="profile-arrow">▼</span>
+            </div>
+
+            <div class="profile-dropdown">
+                <a href="#" class="dropdown-item">
+                    <span>👤</span>
+                    <span data-i18n="profile">My Profile</span>
+                </a>
+                <a href="#" class="dropdown-item">
+                    <span>⚙️</span>
+                    <span data-i18n="settings">Settings</span>
+                </a>
+                <a href="#" class="dropdown-item">
+                    <span>📱</span>
+                    <span data-i18n="telegram">Telegram</span>
+                </a>
+                <div class="dropdown-divider"></div>
+                <a href="{% url 'logout' %}" class="dropdown-item danger">
+                    <span>🚪</span>
+                    <span data-i18n="logout">Logout</span>
+                </a>
+            </div>
+        </div>
+    </div>
+</nav>
+
+<script>
+    // Toggle profile dropdown
+    function toggleProfileDropdown() {
+        const dropdown = document.getElementById('profileDropdown');
+        dropdown.classList.toggle('open');
+    }
+
+    // Close dropdown when clicking outside
+    document.addEventListener('click', (e) => {
+        const dropdown = document.getElementById('profileDropdown');
+        if (dropdown && !dropdown.contains(e.target)) {
+            dropdown.classList.remove('open');
+        }
+    });
+
+    // Language toggle
+    document.querySelectorAll('.lang-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const lang = btn.dataset.lang;
+            document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            document.body.dataset.lang = lang;
+            // Save preference via API (can be implemented later)
+            console.log('Language switched to:', lang);
+        });
+    });
+</script>

@@ -1,0 +1,89 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}My Cart | Harvest Sync{% endblock %}
+
+{% block role %}consumer{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/modules/consumer.css' %}">
+{% endblock %}
+
+{% block content %}
+{% include 'partials/consumer_nav.html' %}
+
+<main class="consumer-main">
+    <div class="dashboard-header">
+        <h1 data-i18n="my_cart">My Cart</h1>
+    </div>
+
+    <div class="glass-card" style="max-width: 800px; margin: 0 auto; padding: 2rem;">
+        {% if cart.items.exists %}
+        <table style="width: 100%; border-collapse: collapse; margin-bottom: 2rem; color: #fff;">
+            <thead>
+                <tr style="border-bottom: 1px solid rgba(255,255,255,0.2);">
+                    <th style="text-align: left; padding: 1rem;" data-i18n="product">Product</th>
+                    <th style="text-align: center; padding: 1rem;" data-i18n="quantity">Quantity</th>
+                    <th style="text-align: right; padding: 1rem;" data-i18n="price">Price</th>
+                    <th style="text-align: right; padding: 1rem;"></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in cart.items.all %}
+                <tr style="border-bottom: 1px solid rgba(255,255,255,0.1);">
+                    <td style="padding: 1rem; display: flex; align-items: center; gap: 1rem;">
+                        {% if item.product.image %}
+                        <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}"
+                            style="width: 50px; height: 50px; object-fit: cover; border-radius: 8px;">
+                        {% else %}
+                        <div
+                            style="width: 50px; height: 50px; background: rgba(255,255,255,0.1); border-radius: 8px; display: flex; align-items: center; justify-content: center;">
+                            🥦</div>
+                        {% endif %}
+                        <div>
+                            <strong>{{ item.product.name }}</strong>
+                            <br>
+                            <small style="opacity: 0.7;">{{ item.product.quantity }}</small>
+                        </div>
+                    </td>
+                    <td style="text-align: center; padding: 1rem;">{{ item.quantity }}</td>
+                    <td style="text-align: right; padding: 1rem;">₹{{ item.total_price }}</td>
+                    <td style="text-align: right; padding: 1rem;">
+                        <form action="{% url 'remove_from_cart' item.id %}" method="POST">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-danger"
+                                style="padding: 0.5rem; background: var(--brand-alert);">🗑️</button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+            <tfoot>
+                <tr>
+                    <td colspan="2" style="text-align: right; padding: 1rem; font-weight: bold;" data-i18n="total">
+                        Total:</td>
+                    <td style="text-align: right; padding: 1rem; font-weight: bold; font-size: 1.2rem;">₹{{
+                        cart.total_price }}</td>
+                    <td></td>
+                </tr>
+            </tfoot>
+        </table>
+
+        <div style="display: flex; justify-content: flex-end; gap: 1rem;">
+            <a href="{% url 'marketplace' %}" class="btn btn-secondary" style="background: rgba(255,255,255,0.1);"
+                data-i18n="continue_shopping">Continue Shopping</a>
+            <form action="{% url 'checkout_cart' %}" method="POST">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-user" data-i18n="checkout">Checkout</button>
+            </form>
+        </div>
+        {% else %}
+        <div style="text-align: center; padding: 3rem;">
+            <div style="font-size: 4rem; opacity: 0.5;">🛒</div>
+            <h3 style="margin: 1rem 0;" data-i18n="cart_empty">Your cart is empty</h3>
+            <a href="{% url 'marketplace' %}" class="btn btn-user" data-i18n="start_shopping">Start Shopping</a>
+        </div>
+        {% endif %}
+    </div>
+</main>
+{% endblock %}

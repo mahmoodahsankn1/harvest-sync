@@ -1,0 +1,111 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Farmer Analytics | Harvest Sync{% endblock %}
+
+{% block role %}farmer{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/modules/farmer.css' %}">
+<link rel="stylesheet" href="{% static 'css/analytics.css' %}">
+{% endblock %}
+
+{% block content %}
+<!-- Farmer Navigation Bar -->
+{% include 'partials/farmer_nav.html' %}
+
+<main class="farmer-main">
+    <div class="analytics-container">
+        <!-- Header Section -->
+        <div class="analytics-header">
+            <div>
+                <h1>Farm Analytics</h1>
+                <p style="color: rgba(255,255,255,0.7);">Track your sales, production, and performance.</p>
+            </div>
+            <div class="date-range-picker">
+                <span>📅</span>
+                <span>Last 30 Days</span>
+                <span>▼</span>
+            </div>
+        </div>
+
+        <!-- Key Metrics Grid -->
+        <div class="analytics-grid">
+            <!-- Total Revenue Card -->
+            <div class="analytics-card">
+                <div class="card-header">
+                    <span class="card-title">Total Revenue</span>
+                    <div class="card-icon">💰</div>
+                </div>
+                <div class="metric-value">₹0</div>
+                <div class="metric-trend trend-up">
+                    <span>↑ 0%</span>
+                    <span style="color: rgba(255,255,255,0.5);">vs last month</span>
+                </div>
+                <div class="chart-container">
+                    [Revenue Chart Placeholder]
+                </div>
+            </div>
+
+            <!-- Orders Limit Card -->
+            <div class="analytics-card">
+                <div class="card-header">
+                    <span class="card-title">Total Orders</span>
+                    <div class="card-icon">📦</div>
+                </div>
+                <div class="metric-value">0</div>
+                <div class="metric-trend trend-up">
+                    <span>↑ 0%</span>
+                    <span style="color: rgba(255,255,255,0.5);">vs last month</span>
+                </div>
+                <div class="chart-container">
+                    [Orders Chart Placeholder]
+                </div>
+            </div>
+
+            <!-- Products Sold Card -->
+            <div class="analytics-card">
+                <div class="card-header">
+                    <span class="card-title">Products Sold</span>
+                    <div class="card-icon">🌾</div>
+                </div>
+                <div class="metric-value">0 kg</div>
+                <div class="metric-trend trend-down">
+                    <span>↓ 0%</span>
+                    <span style="color: rgba(255,255,255,0.5);">vs last month</span>
+                </div>
+                <div class="chart-container">
+                    [Products Chart Placeholder]
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Activity Section -->
+        <div class="analytics-card">
+            <div class="card-header">
+                <span class="card-title">Recent Transactions</span>
+                <button class="btn btn-farmer" style="padding: 0.5rem 1rem; font-size: 0.9rem;">View All</button>
+            </div>
+            <ul class="recent-activity-list">
+                <!-- Placeholder items -->
+                <li class="activity-item">
+                    <div class="activity-info">
+                        <h4>No recent transactions</h4>
+                        <span class="activity-date">--</span>
+                    </div>
+                    <span class="activity-amount">--</span>
+                </li>
+            </ul>
+        </div>
+    </div>
+</main>
+{% endblock %}
+
+{% block extra_js %}
+<script type="module">
+    // Analytics specific JS can go here
+    document.addEventListener('DOMContentLoaded', () => {
+        console.log('Analytics loaded');
+    });
+</script>
+{% endblock %}

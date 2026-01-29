@@ -1,0 +1,108 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ product.name }} | Harvest Sync{% endblock %}
+{% block role %}consumer{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/modules/consumer.css' %}">
+{% endblock %}
+
+{% block content %}
+<!-- Consumer Navigation -->
+{% include 'partials/consumer_nav.html' %}
+
+<main class="consumer-main">
+    <div class="dashboard-header" style="margin-bottom: 2rem;">
+        <a href="{% url 'marketplace' %}"
+            style="color: var(--text-primary); text-decoration: none; display: flex; align-items: center; gap: 0.5rem; margin-bottom: 1rem;">
+            <span>←</span> Back to Marketplace
+        </a>
+        <h1>{{ product.name }}</h1>
+    </div>
+
+    <div class="glass-card"
+        style="max-width: 900px; margin: 0 auto; display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; align-items: start;">
+
+        <!-- Image Section -->
+        <div style="border-radius: 16px; overflow: hidden; background: rgba(0,0,0,0.2);">
+            {% if product.image %}
+            <img src="{{ product.image.url }}" alt="{{ product.name }}"
+                style="width: 100%; height: 100%; object-fit: cover; min-height: 300px;">
+            {% else %}
+            <div
+                style="width: 100%; height: 300px; display: flex; align-items: center; justify-content: center; font-size: 5rem;">
+                🥦
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Details Section -->
+        <div>
+            <div style="margin-bottom: 1.5rem;">
+                <p style="font-size: 0.9rem; opacity: 0.7; margin-bottom: 0.5rem;">Sold by {{ product.farmer.first_name
+                    }}</p>
+                <h2 style="font-size: 2.5rem; margin-bottom: 0.5rem;">₹{{ product.current_price }}</h2>
+                {% if product.is_surplus_active %}
+                <span
+                    style="background: #EF4444; color: white; padding: 0.25rem 0.75rem; border-radius: 99px; font-size: 0.9rem;">Surplus
+                    Sale</span>
+                {% endif %}
+            </div>
+
+            <div
+                style="margin-bottom: 2rem; display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; font-size: 0.95rem;">
+                <div style="background: rgba(255,255,255,0.05); padding: 1rem; border-radius: 12px;">
+                    <span style="display: block; opacity: 0.7;">Quantity</span>
+                    <strong>{{ product.quantity }}</strong>
+                </div>
+                <div style="background: rgba(255,255,255,0.05); padding: 1rem; border-radius: 12px;">
+                    <span style="display: block; opacity: 0.7;">Harvest Date</span>
+                    <strong>{{ product.harvest_date }}</strong>
+                </div>
+                <div style="background: rgba(255,255,255,0.05); padding: 1rem; border-radius: 12px;">
+                    <span style="display: block; opacity: 0.7;">Expiry Date</span>
+                    <strong>{{ product.expiry_date }}</strong>
+                </div>
+                <div style="background: rgba(255,255,255,0.05); padding: 1rem; border-radius: 12px;">
+                    <span style="display: block; opacity: 0.7;">Delivery</span>
+                    <strong>{% if product.delivery_available %}Available{% else %}Pickup Only{% endif %}</strong>
+                </div>
+            </div>
+
+            {% if product.is_bidding %}
+            <div
+                style="background: rgba(245, 158, 11, 0.1); border: 1px solid rgba(245, 158, 11, 0.3); padding: 1.5rem; border-radius: 16px; margin-bottom: 2rem;">
+                <h3 style="color: #F59E0B; margin-bottom: 1rem;">AUCTION LIVE</h3>
+                <p style="margin-bottom: 0.5rem;">Highest Bid: <strong>₹{% if highest_bid %}{{ highest_bid.amount }}{%
+                        else %}{{ product.current_price }} (Base){% endif %}</strong></p>
+                <p style="margin-bottom: 1rem; font-size: 0.9rem; opacity: 0.8;">Ends: {{
+                    product.bidding_end_time|default:"Soon" }}</p>
+
+                <form action="{% url 'place_bid' product.id %}" method="POST" style="display: flex; gap: 0.5rem;">
+                    {% csrf_token %}
+                    <input type="number" name="amount" placeholder="Your Bid (₹)" step="0.01" required
+                        style="flex: 1; padding: 0.8rem; border-radius: 12px; border: none;">
+                    <button type="submit" class="btn btn-user" style="background: #F59E0B;">Place Bid</button>
+                </form>
+            </div>
+            {% else %}
+            <div style="display: flex; gap: 1rem; margin-bottom: 2rem;">
+                <form action="{% url 'add_to_cart' product.id %}" method="POST" style="flex: 1;">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-user"
+                        style="width: 100%; padding: 1rem; font-size: 1.2rem; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2);"
+                        data-i18n="add_to_cart">Add to Cart</button>
+                </form>
+                <form action="{% url 'buy_product' product.id %}" method="POST" style="flex: 1;">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-user" style="width: 100%; padding: 1rem; font-size: 1.2rem;"
+                        data-i18n="buy_now">Buy Now</button>
+                </form>
+            </div>
+            {% endif %}
+
+        </div>
+    </div>
+</main>
+{% endblock %}

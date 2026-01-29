@@ -25,7 +25,9 @@ SECRET_KEY = 'django-insecure-2ns#^(o8gmz=5%zv%i!5kw0a9zkg!uaq(z2*uwbutcz)9asycj
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
+
+CSRF_TRUSTED_ORIGINS = ['https://*.ngrok-free.app', 'https://*.loca.lt']
 
 
 # Application definition
@@ -123,3 +125,25 @@ STATICFILES_DIRS = [BASE_DIR / 'static']
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# Email Configuration
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'mahmoodahsan067@gmail.com'
+EMAIL_HOST_PASSWORD = 'mlvo svfi hmdk oiit'
+
+# Telegram Bot Configuration
+TELEGRAM_BOT_TOKEN = '7698694209:AAHb-CUueetvnIphGxVWBfWrRvhwJN_d8iE'
+
+
+# Weather API Configuration
+OPENMETEO_API_URL = 'https://api.open-meteo.com/v1/forecast'
+WEATHER_CHECK_INTERVAL = 3  # hours
+WEATHER_ALERT_CACHE_TIMEOUT = 1800  # 30 minutes in seconds
+
+# Media Files Configuration
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'
+

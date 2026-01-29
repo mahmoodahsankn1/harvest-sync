@@ -2,8 +2,8 @@
 
 :root {
     /* STRICT COLOR THEME ENFORCEMENT */
-    --bg-glass: rgba(255, 255, 255, 0.15);
-    --border-glass: rgba(255, 255, 255, 0.2);
+    --bg-glass: rgba(255, 255, 255, 0.25);
+    --border-glass: rgba(255, 255, 255, 0.3);
     --brand-farmer: #F59E0B;
     --brand-user: #0EA5E9;
     --brand-worker: #475569;
@@ -60,17 +60,34 @@ body {
 
 .btn:hover {
     transform: translateY(-2px);
-    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
 }
 
 /* Button Variants */
-.btn-farmer { background: var(--brand-farmer); color: white; }
-.btn-user { background: var(--brand-user); color: white; }
-.btn-worker { background: var(--brand-worker); color: white; }
-.btn-govt { background: var(--brand-govt); color: white; }
+.btn-farmer {
+    background: var(--brand-farmer);
+    color: white;
+}
+
+.btn-user {
+    background: var(--brand-user);
+    color: white;
+}
+
+.btn-worker {
+    background: var(--brand-worker);
+    color: white;
+}
+
+.btn-govt {
+    background: var(--brand-govt);
+    color: white;
+}
 
 /* Typography */
-h1, h2, h3 {
+h1,
+h2,
+h3 {
     font-weight: 800;
     line-height: 1.2;
 }

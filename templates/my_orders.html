@@ -1,0 +1,77 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}My Orders | Harvest Sync{% endblock %}
+{% block role %}farmer{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/modules/farmer.css' %}">
+{% endblock %}
+
+{% block content %}
+<!-- Farmer Navigation Bar -->
+{% include 'partials/farmer_nav.html' %}
+
+<main class="farmer-main">
+    <div class="dashboard-header"
+        style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+        <h1>My Incoming Orders</h1>
+        <a href="{% url 'farmer_marketplace' %}" class="btn btn-farmer" style="background: rgba(255,255,255,0.2);">Back
+            to
+            Marketplace</a>
+    </div>
+
+    <form action="{% url 'optimize_route' %}" method="POST">
+        {% csrf_token %}
+
+        <div style="margin-bottom: 1rem; display: flex; justify-content: flex-end;">
+            <button type="submit" class="btn btn-worker" style="display: flex; align-items: center; gap: 0.5rem;">
+                <span>🗺️</span> Generate Delivery Route (Google Maps)
+            </button>
+        </div>
+
+        <div class="glass-card" style="padding: 0; overflow: hidden;">
+            <table style="width: 100%; border-collapse: collapse; color: white;">
+                <thead>
+                    <tr style="background: rgba(255,255,255,0.1); text-align: left;">
+                        <th style="padding: 1rem; width: 50px;">Select</th>
+                        <th style="padding: 1rem;">Order ID</th>
+                        <th style="padding: 1rem;">Product</th>
+                        <th style="padding: 1rem;">Buyer</th>
+                        <th style="padding: 1rem;">Quantity</th>
+                        <th style="padding: 1rem;">Amount</th>
+                        <th style="padding: 1rem;">Location</th>
+                        <th style="padding: 1rem;">Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for order in orders %}
+                    <tr style="border-bottom: 1px solid var(--border-glass);">
+                        <td style="padding: 1rem; text-align: center;">
+                            <input type="checkbox" name="order_ids" value="{{ order.id }}"
+                                style="width: 18px; height: 18px;">
+                        </td>
+                        <td style="padding: 1rem;">#{{ order.id }}</td>
+                        <td style="padding: 1rem;">{{ order.product.name }}</td>
+                        <td style="padding: 1rem;">{{ order.buyer.first_name }}</td>
+                        <td style="padding: 1rem;">{{ order.quantity }}</td>
+                        <td style="padding: 1rem;">₹{{ order.total_price }}</td>
+                        <td style="padding: 1rem;">{{ order.location }}</td>
+                        <td style="padding: 1rem;">
+                            <span
+                                style="background: rgba(16, 185, 129, 0.2); color: #10B981; padding: 0.25rem 0.75rem; border-radius: 99px; font-size: 0.9rem;">
+                                {{ order.status|title }}
+                            </span>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="8" style="padding: 2rem; text-align: center; opacity: 0.7;">No orders received yet.
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </form>
+    {% endblock %}

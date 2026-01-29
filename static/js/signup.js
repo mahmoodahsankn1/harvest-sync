@@ -10,6 +10,11 @@ class SignupUI extends UI {
         this.submitBtn = document.getElementById('submit-btn');
         this.body = document.body;
 
+        // Map related
+        this.map = null;
+        this.marker = null;
+        this.mapInitialized = false;
+
         this.initRoleSwitching();
     }
 
@@ -38,66 +43,115 @@ class SignupUI extends UI {
         // Update submit button style based on role
         this.submitBtn.className = `btn btn-${role === 'consumer' ? 'user' : role}`;
 
+        // Update hidden input for role
+        const roleInput = document.getElementById('role-input');
+        if (roleInput) {
+            roleInput.value = role;
+        }
+
         // Ensure land area input is required for farmers
         const landInput = document.getElementById('land_area');
         if (landInput) {
             landInput.required = (role === 'farmer');
         }
 
-        // Auto-detect location for farmer
+        // Initialize map if farmer role is selected
         if (role === 'farmer') {
-            this.detectLocation();
+            if (!this.mapInitialized) {
+                this.initMap();
+            } else {
+                // Resize map if it was previously hidden
+                setTimeout(() => {
+                    if (this.map) google.maps.event.trigger(this.map, 'resize');
+                }, 100);
+            }
         }
 
         console.log(`Switched to role: ${role}`);
     }
 
-    detectLocation() {
-        const statusEl = document.getElementById('location-status');
-        const container = document.getElementById('location-container');
-        const latInput = document.getElementById('latitude');
-        const longInput = document.getElementById('longitude');
-
-        if (!statusEl || !latInput || !longInput) return;
-
-        // Reset if already detected? We keep it to avoid re-fetching if user switches back and forth
-        if (latInput.value) return;
-
-        // Update Text to "Fetching..."
-        const fetchMsg = this.currentLang === 'ml' ? "ലൊക്കേഷൻ തിരയുന്നു..." : "Fetching location...";
-        statusEl.textContent = fetchMsg;
-        container.style.cursor = 'wait';
-
-        if (!navigator.geolocation) {
-            statusEl.textContent = "Geolocation not supported";
+    async initMap() {
+        if (typeof google === 'undefined') {
+            console.error("Google Maps API not loaded");
             return;
         }
+
+        const mapElement = document.getElementById('location-container');
+        if (!mapElement) return;
+
+        // Clear placeholder content
+        mapElement.innerHTML = '';
+        mapElement.style.cursor = 'default';
+
+        // Default location (Kerala)
+        const defaultLoc = { lat: 10.8505, lng: 76.2711 };
+
+        const { Map } = await google.maps.importLibrary("maps");
+        const { Marker } = await google.maps.importLibrary("marker");
+
+        this.map = new Map(mapElement, {
+            center: defaultLoc,
+            zoom: 8,
+            mapId: "DEMO_MAP_ID", // Required for AdvancedMarkerElement if used, or just good practice
+            streetViewControl: false,
+            mapTypeControl: false
+        });
+
+        this.marker = new Marker({
+            position: defaultLoc,
+            map: this.map,
+            draggable: true,
+            title: "Farm Location"
+        });
+
+        this.mapInitialized = true;
+
+        // Listeners for marker drag
+        this.marker.addListener('dragend', () => {
+            const pos = this.marker.getPosition();
+            this.updateLocationInputs(pos.lat(), pos.lng());
+        });
+
+        // Click on map to move marker
+        this.map.addListener('click', (e) => {
+            const clickedPos = e.latLng;
+            this.marker.setPosition(clickedPos);
+            this.updateLocationInputs(clickedPos.lat(), clickedPos.lng());
+        });
+
+        // Try to get user's current location
+        this.detectLocation();
+    }
+
+    updateLocationInputs(lat, lng) {
+        document.getElementById('latitude').value = lat.toFixed(6);
+        document.getElementById('longitude').value = lng.toFixed(6);
+        console.log(`Updated location: ${lat}, ${lng}`);
+    }
+
+    detectLocation() {
+        if (!navigator.geolocation) return;
 
         navigator.geolocation.getCurrentPosition(
             (position) => {
                 const { latitude, longitude } = position.coords;
-                latInput.value = latitude;
-                longInput.value = longitude;
+                const pos = { lat: latitude, lng: longitude };
 
-                const successMsg = this.currentLang === 'ml' ? "ലൊക്കേഷൻ കണ്ടെത്തി" : "Location detected";
-                statusEl.textContent = `${successMsg}: ${latitude.toFixed(4)}, ${longitude.toFixed(4)}`;
-                container.style.borderColor = 'var(--brand-farmer)';
-                container.style.color = 'var(--brand-farmer)';
-                container.style.cursor = 'default';
+                if (this.map && this.marker) {
+                    this.map.setCenter(pos);
+                    this.map.setZoom(15);
+                    this.marker.setPosition(pos);
+                    this.updateLocationInputs(latitude, longitude);
+                }
             },
             (error) => {
-                console.error("Geolocation error:", error);
-                const errorMsg = this.currentLang === 'ml' ? "ലൊക്കേഷൻ അനുമതി നിഷേധിച്ചു" : "Location access denied";
-                statusEl.textContent = errorMsg;
-                // Allow manual retry on click
-                container.style.cursor = 'pointer';
-                container.onclick = () => this.detectLocation();
+                console.warn("Geolocation denied or error:", error);
             }
         );
     }
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-    const signupUI = new SignupUI();
-    console.log("Harvest Sync Signup Initialized");
+    new SignupUI();
+    console.log("Harvest Sync Signup Initialized with Maps");
 });

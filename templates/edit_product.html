@@ -1,0 +1,129 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Edit Product | Harvest Sync{% endblock %}
+{% block role %}farmer{% endblock %}
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/modules/farmer.css' %}">
+{% endblock %}
+{% block content %}
+<!-- Farmer Navigation Bar -->
+{% include 'partials/farmer_nav.html' %}
+<main class="farmer-main">
+    <div class="dashboard-header" style="margin-bottom: 2rem;">
+        <h1>Edit Product</h1>
+        <a href="{% url 'my_products' %}" class="btn btn-farmer" style="background: rgba(255,255,255,0.2);">Back to My
+            Products</a>
+    </div>
+    <div class="glass-card" style="max-width: 800px; margin: 0 auto; padding: 2rem;">
+        <form method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="form-group" style="margin-bottom: 1.5rem;">
+                <label style="display: block; margin-bottom: 0.5rem;">Product Name</label>
+                <input type="text" name="name" value="{{ product.name }}" required
+                    style="width: 100%; padding: 0.8rem; border-radius: 12px; background: rgba(255,255,255,0.1); border: 1px solid var(--border-glass); color: white;">
+            </div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 1.5rem;">
+                <div class="form-group">
+                    <label style="display: block; margin-bottom: 0.5rem;">Quantity (e.g., 10 kg)</label>
+                    <input type="text" name="quantity" value="{{ product.quantity }}" required
+                        style="width: 100%; padding: 0.8rem; border-radius: 12px; background: rgba(255,255,255,0.1); border: 1px solid var(--border-glass); color: white;">
+                </div>
+                <div class="form-group">
+                    <label style="display: block; margin-bottom: 0.5rem;">Regular Price (₹)</label>
+                    <input type="number" name="price" step="0.01" value="{{ product.price }}" required
+                        style="width: 100%; padding: 0.8rem; border-radius: 12px; background: rgba(255,255,255,0.1); border: 1px solid var(--border-glass); color: white;">
+                    <small style="opacity: 0.7;">Used for direct purchase.</small>
+                </div>
+            </div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 1.5rem;">
+                <div class="form-group">
+                    <label style="display: block; margin-bottom: 0.5rem;">Harvest Date</label>
+                    <input type="date" name="harvest_date" value="{{ product.harvest_date|date:'Y-m-d' }}" required
+                        style="width: 100%; padding: 0.8rem; border-radius: 12px; background: rgba(255,255,255,0.1); border: 1px solid var(--border-glass); color: white;">
+                </div>
+                <div class="form-group">
+                    <label style="display: block; margin-bottom: 0.5rem;">Expiry Date</label>
+                    <input type="date" name="expiry_date" value="{{ product.expiry_date|date:'Y-m-d' }}" required
+                        style="width: 100%; padding: 0.8rem; border-radius: 12px; background: rgba(255,255,255,0.1); border: 1px solid var(--border-glass); color: white;">
+                </div>
+            </div>
+            <h3 style="margin-bottom: 1rem; border-bottom: 1px solid var(--border-glass); padding-bottom: 0.5rem;">
+                Surplus Settings</h3>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 1.5rem;">
+                <div class="form-group">
+                    <label style="display: block; margin-bottom: 0.5rem;">Surplus Date (Optional)</label>
+                    <input type="date" name="surplus_date" value="{{ product.surplus_date|date:'Y-m-d' }}"
+                        style="width: 100%; padding: 0.8rem; border-radius: 12px; background: rgba(255,255,255,0.1); border: 1px solid var(--border-glass); color: white;">
+                    <small style="opacity: 0.7;">Price changes to Surplus Rate after this date.</small>
+                </div>
+                <div class="form-group">
+                    <label style="display: block; margin-bottom: 0.5rem;">Surplus Rate (₹)</label>
+                    <input type="number" name="surplus_rate" step="0.01" value="{{ product.surplus_rate }}"
+                        style="width: 100%; padding: 0.8rem; border-radius: 12px; background: rgba(255,255,255,0.1); border: 1px solid var(--border-glass); color: white;">
+                </div>
+            </div>
+            <h3 style="margin-bottom: 1rem; border-bottom: 1px solid var(--border-glass); padding-bottom: 0.5rem;">
+                Additional Options</h3>
+            <div style="margin-bottom: 1.5rem;">
+                <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+                    <input type="checkbox" name="is_bidding" id="is_bidding" {% if product.is_bidding %}checked{% endif %} style="width: 20px; height: 20px;">
+                    Enable Auction / Bidding
+                </label>
+            </div>
+            <div id="bidding-fields"
+                style="{% if not product.is_bidding %}display: none;{% endif %} background: rgba(245, 158, 11, 0.1); padding: 1.5rem; border-radius: 16px; margin-bottom: 1.5rem; border: 1px solid rgba(245, 158, 11, 0.3);">
+                <h4 style="margin-bottom: 1rem; color: var(--brand-farmer);">Auction Settings</h4>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+                    <div class="form-group">
+                        <label style="display: block; margin-bottom: 0.5rem;">Base Bid Price (₹)</label>
+                        <input type="number" name="base_bid_price" step="0.01" value="{{ product.base_bid_price }}"
+                            style="width: 100%; padding: 0.8rem; border-radius: 12px; background: rgba(255,255,255,0.1); border: 1px solid var(--border-glass); color: white;">
+                        <small style="opacity: 0.7;">Starting price for the auction.</small>
+                    </div>
+                    <div class="form-group">
+                        <label style="display: block; margin-bottom: 0.5rem;">Bidding Duration (Hours)</label>
+                        <input type="number" name="bidding_duration_hours" min="1" step="1"
+                            style="width: 100%; padding: 0.8rem; border-radius: 12px; background: rgba(255,255,255,0.1); border: 1px solid var(--border-glass); color: white;">
+                        <small style="opacity: 0.7;">E.g., 24 for 1 day, 72 for 3 days. Resets the end time.</small>
+                    </div>
+                </div>
+            </div>
+            <div style="margin-bottom: 1.5rem;">
+                <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+                    <input type="checkbox" name="delivery_available" {% if product.delivery_available %}checked{% endif %} style="width: 20px; height: 20px;">
+                    Delivery Available
+                </label>
+            </div>
+            <div class="form-group" style="margin-bottom: 1.5rem;">
+                <label style="display: block; margin-bottom: 0.5rem;">Product Image</label>
+                {% if product.image %}
+                <div style="margin-bottom: 1rem;">
+                    <img src="{{ product.image.url }}" alt="{{ product.name }}"
+                        style="max-width: 200px; border-radius: 12px;">
+                    <p style="opacity: 0.7; font-size: 0.9rem;">Current image</p>
+                </div>
+                {% endif %}
+                <input type="file" name="image" accept="image/*"
+                    style="width: 100%; padding: 0.8rem; border-radius: 12px; background: rgba(255,255,255,0.1); border: 1px solid var(--border-glass); color: white;">
+                <small style="opacity: 0.7;">Leave empty to keep current image.</small>
+            </div>
+            <div style="display: flex; gap: 1rem;">
+                <button type="submit" class="btn btn-farmer" style="flex: 1; padding: 1rem; font-size: 1.1rem;">Update
+                    Product</button>
+                <a href="{% url 'my_products' %}" class="btn"
+                    style="flex: 1; padding: 1rem; font-size: 1.1rem; background: rgba(255,255,255,0.2); text-align: center; border-radius: 24px;">Cancel</a>
+            </div>
+        </form>
+    </div>
+</main>
+{% endblock %}
+{% block extra_js %}
+<script type="module">
+    const biddingCheckbox = document.getElementById('is_bidding');
+    const biddingFields = document.getElementById('bidding-fields');
+    function toggleBiddingFields() {
+        biddingFields.style.display = biddingCheckbox.checked ? 'block' : 'none';
+    }
+    biddingCheckbox.addEventListener('change', toggleBiddingFields);
+</script>
+{% endblock %}

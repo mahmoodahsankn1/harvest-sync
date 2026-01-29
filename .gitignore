@@ -1,0 +1,15 @@
+*.pyc
+__pycache__/
+db.sqlite3
+media/
+.env
+venv/
+env/
+.vscode/
+*.log
+.DS_Store
+*.swp
+*.bak
+test_result.log
+test_result_internal.log
+otp_debug.txt

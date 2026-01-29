@@ -1,0 +1,127 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Marketplace | Harvest Sync{% endblock %}
+
+{% block role %}consumer{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/modules/consumer.css' %}">
+{% endblock %}
+
+{% block content %}
+<!-- Consumer Navigation -->
+{% include 'partials/consumer_nav.html' %}
+
+<main class="consumer-main">
+    <div class="dashboard-header">
+        <h1 data-i18n="marketplace_title">Marketplace</h1>
+        <div class="header-user-info">
+            <span><span data-i18n="welcome_user">Welcome, </span>{{ request.user.first_name }}</span>
+        </div>
+    </div>
+
+    <div class="marketplace-layout">
+
+        <!-- Filter Sidebar -->
+        <aside class="glass-card filter-sidebar">
+            <h3 class="filter-title" data-i18n="filters">Filters</h3>
+
+            <form method="GET" action="{% url 'marketplace' %}">
+                <!-- Sort -->
+                <div class="filter-group">
+                    <label class="filter-label" data-i18n="sort_by">Sort By</label>
+                    <select name="sort" class="glass-select">
+                        <option value="newest" data-i18n="sort_newest">Newest First</option>
+                        <option value="price_asc" data-i18n="sort_price_asc">Price: Low to High</option>
+                        <option value="price_desc" data-i18n="sort_price_desc">Price: High to Low</option>
+                    </select>
+                </div>
+
+                <!-- Price Range -->
+                <div class="filter-group">
+                    <label class="filter-label" data-i18n="price_range">Price Range (₹)</label>
+                    <div class="price-inputs">
+                        <input type="number" name="min_price" class="glass-input" placeholder="Min"
+                            value="{{ current_filters.min_price }}">
+                        <input type="number" name="max_price" class="glass-input" placeholder="Max"
+                            value="{{ current_filters.max_price }}">
+                    </div>
+                </div>
+
+                <!-- Toggles -->
+                <div class="filter-group" style="margin-bottom: 0.5rem;">
+                    <label class="checkbox-label">
+                        <input type="checkbox" name="delivery">
+                        <span data-i18n="delivery_available">Delivery Available</span>
+                    </label>
+                </div>
+                <div class="filter-group">
+                    <label class="checkbox-label">
+                        <input type="checkbox" name="bidding">
+                        <span data-i18n="bidding_enabled">Bidding Enabled</span>
+                    </label>
+                </div>
+
+                <button type="submit" class="btn btn-user" style="width: 100%; justify-content: center;"
+                    data-i18n="apply_filters">Apply Filters</button>
+                <a href="{% url 'marketplace' %}" class="clear-filters" data-i18n="clear_all">Clear All</a>
+            </form>
+        </aside>
+
+        <!-- Product Grid -->
+        <div class="product-grid">
+            {% for product in products %}
+            <div class="glass-card product-card">
+                {% if product.image %}
+                <img src="{{ product.image.url }}" alt="{{ product.name }}" class="product-image">
+                {% else %}
+                <div class="product-placeholder">
+                    🥦
+                </div>
+                {% endif %}
+
+                <h3 class="product-title">{{ product.name }}</h3>
+                <p class="product-price">
+                    ₹{{ product.current_price }}
+                    {% if product.is_surplus_active %}
+                    <span class="old-price">₹{{ product.price }}</span>
+                    {% endif %}
+                </p>
+
+                {% if product.is_surplus_active %}
+                <span class="badge badge-surplus" data-i18n="surplus_deal">Surplus Deal</span>
+                {% elif product.is_bidding %}
+                <span class="badge badge-bidding" data-i18n="bidding_live">Bidding Live</span>
+                {% endif %}
+
+                <p class="product-expiry"><span data-i18n="expires">Expires: </span>{{ product.expiry_date }}</p>
+
+                <div class="product-actions" style="display: flex; gap: 0.5rem; margin-top: 1rem;">
+                    {% if product.is_bidding %}
+                    <a href="{% url 'product_detail' product.id %}" class="btn btn-user"
+                        style="flex: 1; text-align: center;" data-i18n="place_bid">Place Bid</a>
+                    {% else %}
+                    <form action="{% url 'add_to_cart' product.id %}" method="POST" style="flex: 1;">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-user" style="width: 100%; justify-content: center;"
+                            data-i18n="add_to_cart">Add to Cart</button>
+                    </form>
+                    <a href="{% url 'product_detail' product.id %}" class="btn btn-user"
+                        style="width: auto; padding: 0.5rem 1rem; background: rgba(255,255,255,0.1);"
+                        title="View Details">
+                        ℹ️
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+            {% empty %}
+            <div class="empty-state">
+                <h3 data-i18n="no_products">No products available currently.</h3>
+                <p data-i18n="check_back">Please check back later!</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</main>
+{% endblock %}

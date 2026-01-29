@@ -141,17 +141,20 @@
 /* Map Placeholder */
 .map-placeholder {
     width: 100%;
-    height: 150px;
+    height: 300px; /* Increased height for map */
+    min-height: 300px;
     background: rgba(0, 0, 0, 0.05);
     border-radius: 12px;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    border: 1px dashed var(--border-glass);
+    border: 1px solid var(--border-glass);
     color: var(--text-secondary);
     font-size: 0.9rem;
     gap: 10px;
+    overflow: hidden; /* Ensure map stays within radius */
+    position: relative;
 }
 
 .map-icon {

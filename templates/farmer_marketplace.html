@@ -1,0 +1,106 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Marketplace | Harvest Sync{% endblock %}
+{% block role %}farmer{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/modules/farmer.css' %}">
+<style>
+    .marketplace-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 2rem;
+        margin-top: 2rem;
+    }
+
+    .marketplace-card {
+        background: var(--bg-glass);
+        backdrop-filter: blur(12px);
+        border: 1px solid var(--border-glass);
+        border-radius: 24px;
+        padding: 2rem;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
+
+    .marketplace-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+    }
+
+    .card-icon {
+        font-size: 4rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .card-title {
+        font-size: 1.5rem;
+        font-weight: 600;
+        margin-bottom: 1rem;
+        color: white;
+    }
+
+    .card-description {
+        color: rgba(255, 255, 255, 0.8);
+        margin-bottom: 2rem;
+        line-height: 1.6;
+        flex-grow: 1;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Farmer Navigation Bar -->
+{% include 'partials/farmer_nav.html' %}
+
+<main class="farmer-main">
+    <div class="dashboard-header">
+        <h1>
+            <span style="margin-right: 0.5rem;">🏪</span>
+            <span data-i18n="marketplace_title">Farmer Marketplace</span>
+        </h1>
+        <p style="color: rgba(255,255,255,0.7); margin-top: 0.5rem;">Manage your products and orders from one place.</p>
+    </div>
+
+    <div class="marketplace-grid">
+        <!-- Add Product -->
+        <div class="marketplace-card">
+            <div class="card-icon">➕</div>
+            <h2 class="card-title" data-i18n="add_product_title">Add Product</h2>
+            <p class="card-description" data-i18n="add_product_desc">List a new crop or product for sale. Set prices,
+                quantities, and harvest details.</p>
+            <a href="{% url 'add_product' %}" class="btn btn-farmer" style="width: 100%;">
+                <span data-i18n="action_add_product">Add New Product</span>
+            </a>
+        </div>
+
+        <!-- View All Products -->
+        <div class="marketplace-card">
+            <div class="card-icon">🌾</div>
+            <h2 class="card-title" data-i18n="my_products_title">My Products</h2>
+            <p class="card-description" data-i18n="my_products_desc">View and manage your current listings. Edit details
+                or remove items as needed.</p>
+            <a href="{% url 'my_products' %}" class="btn btn-farmer"
+                style="width: 100%; background: linear-gradient(135deg, #10B981 0%, #059669 100%);">
+                <span data-i18n="action_view_products">View All Products</span>
+            </a>
+        </div>
+
+        <!-- View Orders -->
+        <div class="marketplace-card">
+            <div class="card-icon">📦</div>
+            <h2 class="card-title" data-i18n="my_orders_title">Incoming Orders</h2>
+            <p class="card-description" data-i18n="my_orders_desc">Track and fulfill orders from consumers. Manage
+                shipping and delivery routes.</p>
+            <a href="{% url 'my_orders' %}" class="btn btn-farmer"
+                style="width: 100%; background: linear-gradient(135deg, #3B82F6 0%, #2563EB 100%);">
+                <span data-i18n="action_view_orders">View Orders</span>
+            </a>
+        </div>
+    </div>
+</main>
+{% endblock %}

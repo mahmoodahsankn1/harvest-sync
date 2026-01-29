@@ -13,6 +13,11 @@
     <!-- CSS Modules -->
     <link rel="stylesheet" href="{% static 'css/global.css' %}">
     <link rel="stylesheet" href="{% static 'css/signup.module.css' %}">
+
+    <!-- Google Maps API -->
+    <script
+        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDDw5FULT7tW5yI1Dhyun3CI9N6I1RgyQo&loading=async&libraries=marker"
+        async defer></script>
 </head>
 
 <body data-role="consumer">
@@ -29,6 +34,16 @@
         <div class="glass-card signup-card">
             <h1 class="signup-title" data-i18n="signup_title">Join Harvest Sync</h1>
 
+            {% if messages %}
+            <div class="messages">
+                {% for message in messages %}
+                <div class="alert alert-{{ message.tags }}">
+                    {{ message }}
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+
             <p style="margin-bottom: 15px; font-weight: 600;" data-i18n="role_select">Select Your Role</p>
             <div class="role-selector">
                 <button class="role-btn" data-role="farmer" data-i18n="farmer">Farmer</button>
@@ -36,7 +51,9 @@
                 <button class="role-btn" data-role="worker" data-i18n="worker">Worker</button>
             </div>
 
-            <form id="signup-form">
+            <form id="signup-form" method="POST">
+                {% csrf_token %}
+                <input type="hidden" id="role-input" name="role" value="consumer">
                 <!-- Common Fields -->
                 <div class="form-group">
                     <label for="name" data-i18n="name">Full Name</label>

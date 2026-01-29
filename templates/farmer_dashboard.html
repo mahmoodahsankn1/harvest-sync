@@ -1,0 +1,122 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Farmer Dashboard | Harvest Sync{% endblock %}
+
+{% block role %}farmer{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/modules/farmer.css' %}">
+<link rel="stylesheet" href="{% static 'css/modules/chatbot.css' %}">
+<link rel="stylesheet" href="{% static 'css/modules/weather.css' %}">
+{% endblock %}
+
+{% block content %}
+<!-- Farmer Navigation Bar -->
+{% include 'partials/farmer_nav.html' %}
+
+<!-- Main Content Area -->
+<main class="farmer-main">
+    <!-- Weather Widget Container -->
+    <div id="weatherWidget"></div>
+
+    <!-- Dashboard Header -->
+    <div class="dashboard-header"
+        style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+        <div>
+            <h1 data-i18n="farmer_title">
+                <span style="margin-right: 0.5rem;">🌾</span>
+                Welcome, {{ request.user.first_name|default:"Farmer" }}!
+            </h1>
+        </div>
+        <div style="display: flex; gap: 1rem;">
+            <a href="{% url 'add_product' %}" class="btn btn-farmer"
+                style="display: flex; align-items: center; gap: 0.5rem;">
+                <span style="font-size: 1.2rem;">+</span> Add Product
+            </a>
+            <a href="{% url 'my_orders' %}" class="btn btn-farmer"
+                style="background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.3); display: flex; align-items: center; gap: 0.5rem;">
+                <span>📦</span> Orders
+            </a>
+        </div>
+    </div>
+
+    <!-- Quick Stats Grid -->
+    <div class="stat-grid">
+        <div class="stat-card">
+            <div class="stat-icon">🌱</div>
+            <div class="stat-value">{{ request.user.profile.land_area|default:"--" }}</div>
+            <div class="stat-label">Acres of Land</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon">📍</div>
+            <div class="stat-value" style="font-size: 1.2rem;">{{ request.user.profile.place|default:"Not set" }}</div>
+            <div class="stat-label">Location</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon">🛒</div>
+            <div class="stat-value">0</div>
+            <div class="stat-label">Active Listings</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon">📊</div>
+            <div class="stat-value">0</div>
+            <div class="stat-label">Total Sales</div>
+        </div>
+    </div>
+
+    <!-- Main Dashboard Content -->
+    <!-- Main Dashboard Content -->
+    <div class="farmer-card" style="margin-top: 2rem; padding: 2rem; min-height: 200px;">
+        <h3 style="margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem; color: white;">
+            <span>👋</span>
+            <span data-i18n="welcome_message">Welcome to Harvest Sync</span>
+        </h3>
+        <p style="margin-bottom: 1.5rem; line-height: 1.6; color: rgba(255,255,255,0.8);">
+            Your central hub for weather alerts, crop management, and marketplace listings.
+            Monitor your farm's status and stay updated with real-time notifications.
+        </p>
+    </div>
+</main>
+
+<!-- n8n Chat Container -->
+<div id="n8n-chat"></div>
+{% endblock %}
+
+{% block extra_js %}
+<script type="module">
+    import { initChatbot } from "{% static 'js/chatbot.js' %}";
+    import WeatherWidget from "{% static 'js/weather.js' %}";
+
+    // Initialize chatbot and weather widget
+    document.addEventListener('DOMContentLoaded', async () => {
+        // Set language on body
+        document.body.dataset.lang = '{{ request.user.profile.language_preference|default:"en" }}';
+
+        // Initialize chatbot with farmer data from Django context
+        try {
+            await initChatbot({
+                webhookUrl: 'https://henlike-lyndon-unciteable.ngrok-free.dev/webhook/f022f3be-9083-4244-8ae1-311f36362a0c/chat',
+                farmerId: '{{ request.user.id }}',
+                farmerName: '{{ request.user.first_name|default:"Farmer" }}',
+                farmerLocation: '{{ request.user.profile.place|default:"" }}'
+            });
+            console.log('Chatbot initialized successfully');
+        } catch (error) {
+            console.error('Failed to initialize chatbot:', error);
+        }
+
+        // Initialize weather widget with enhanced options
+        try {
+            const weatherWidget = new WeatherWidget('weatherWidget', {
+                language: '{{ request.user.profile.language_preference|default:"en" }}',
+                location: '{{ request.user.profile.place|default:"Your Farm" }}'
+            });
+            await weatherWidget.init();
+            console.log('Weather widget initialized successfully');
+        } catch (error) {
+            console.error('Failed to initialize weather widget:', error);
+        }
+    });
+</script>
+{% endblock %}
